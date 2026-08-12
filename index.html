@@ -3,254 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Extractor de Facturas</title>
+<title>Extractor de Facturas (Gratis)</title>
 <style>
   :root{
-    --bg:#0f1115;
-    --panel:#171a21;
-    --panel-2:#1e222c;
-    --border:#2a2f3a;
-    --text:#e8eaed;
-    --text-dim:#9aa1ae;
-    --accent:#5b8cff;
-    --accent-2:#7c5bff;
-    --ok:#3ecf8e;
-    --err:#ff5c6c;
-    --warn:#f5a623;
-    --radius:14px;
+    --bg:#0f1115; --panel:#171a21; --panel-2:#1e222c; --border:#2a2f3a;
+    --text:#e8eaed; --text-dim:#9aa1ae; --accent:#3ecf8e; --accent-2:#2fa96f;
+    --ok:#3ecf8e; --err:#ff5c6c; --warn:#f5a623; --radius:14px;
   }
   @media (prefers-color-scheme: light){
-    :root{
-      --bg:#f5f6f8;
-      --panel:#ffffff;
-      --panel-2:#f0f1f4;
-      --border:#e2e4ea;
-      --text:#1b1e26;
-      --text-dim:#666b78;
-    }
+    :root{ --bg:#f5f6f8; --panel:#ffffff; --panel-2:#f0f1f4; --border:#e2e4ea; --text:#1b1e26; --text-dim:#666b78; }
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh;
-    padding-bottom:60px;
-  }
-  header{
-    padding:20px 18px 10px;
-    text-align:center;
-  }
-  header h1{
-    font-size:1.3rem;
-    margin:0 0 4px;
-    font-weight:700;
-  }
-  header p{
-    margin:0;
-    color:var(--text-dim);
-    font-size:0.88rem;
-  }
-  main{
-    max-width:560px;
-    margin:0 auto;
-    padding:0 16px;
-  }
-  .card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:16px;
-    margin-top:14px;
-  }
-  .card h2{
-    font-size:0.95rem;
-    margin:0 0 10px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .badge{
-    font-size:0.68rem;
-    background:var(--panel-2);
-    color:var(--text-dim);
-    padding:2px 8px;
-    border-radius:20px;
-    border:1px solid var(--border);
-  }
-  label{
-    display:block;
-    font-size:0.8rem;
-    color:var(--text-dim);
-    margin-bottom:6px;
-  }
-  input[type=password], input[type=text], select{
-    width:100%;
-    padding:10px 12px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    background:var(--panel-2);
-    color:var(--text);
-    font-size:0.95rem;
-    margin-bottom:10px;
-  }
-  select{ appearance:none; }
-  .hint{
-    font-size:0.75rem;
-    color:var(--text-dim);
-    line-height:1.4;
-    margin-top:-4px;
-    margin-bottom:10px;
-  }
-  .hint a{ color:var(--accent); }
-  .photo-input{
-    display:flex;
-    gap:10px;
-  }
-  .photo-btn{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    padding:22px 10px;
-    border-radius:12px;
-    border:1.5px dashed var(--border);
-    background:var(--panel-2);
-    color:var(--text-dim);
-    font-size:0.82rem;
-    cursor:pointer;
-    text-align:center;
-  }
+  body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:60px; }
+  header{ padding:20px 18px 10px; text-align:center; }
+  header h1{ font-size:1.3rem; margin:0 0 4px; font-weight:700; }
+  header p{ margin:0; color:var(--text-dim); font-size:0.85rem; line-height:1.4; }
+  main{ max-width:560px; margin:0 auto; padding:0 16px; }
+  .card{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-top:14px; }
+  .card h2{ font-size:0.95rem; margin:0 0 10px; display:flex; align-items:center; gap:8px; }
+  .badge{ font-size:0.68rem; background:var(--panel-2); color:var(--text-dim); padding:2px 8px; border-radius:20px; border:1px solid var(--border); }
+  .badge.free{ color:var(--accent); border-color:rgba(62,207,142,0.4); background:rgba(62,207,142,0.1); }
+  label{ display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px; }
+  input[type=text], select{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font-size:0.95rem; margin-bottom:10px; }
+  .hint{ font-size:0.75rem; color:var(--text-dim); line-height:1.4; margin-top:-4px; margin-bottom:10px; }
+  .photo-input{ display:flex; gap:10px; }
+  .photo-btn{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:22px 10px; border-radius:12px; border:1.5px dashed var(--border); background:var(--panel-2); color:var(--text-dim); font-size:0.82rem; cursor:pointer; text-align:center; }
   .photo-btn svg{ width:26px; height:26px; opacity:0.8; }
   input[type=file]{ display:none; }
-  #preview-wrap{
-    margin-top:12px;
-    display:none;
-  }
-  #preview-wrap img{
-    width:100%;
-    border-radius:12px;
-    border:1px solid var(--border);
-    display:block;
-  }
-  .btn{
-    width:100%;
-    padding:13px;
-    border-radius:12px;
-    border:none;
-    font-size:0.98rem;
-    font-weight:600;
-    cursor:pointer;
-    margin-top:12px;
-  }
-  .btn-primary{
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    color:#fff;
-  }
-  .btn-primary:disabled{
-    opacity:0.5;
-    cursor:not-allowed;
-  }
-  .btn-ghost{
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--text);
-  }
-  .status{
-    margin-top:12px;
-    padding:10px 12px;
-    border-radius:10px;
-    font-size:0.85rem;
-    display:none;
-  }
+  #preview-wrap{ margin-top:12px; display:none; }
+  #preview-wrap img{ width:100%; border-radius:12px; border:1px solid var(--border); display:block; }
+  .btn{ width:100%; padding:13px; border-radius:12px; border:none; font-size:0.98rem; font-weight:600; cursor:pointer; margin-top:12px; }
+  .btn-primary{ background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c1410; }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; border:1px solid var(--border); color:var(--text); }
+  .status{ margin-top:12px; padding:10px 12px; border-radius:10px; font-size:0.85rem; display:none; }
   .status.show{ display:block; }
-  .status.info{ background:rgba(91,140,255,0.12); color:var(--accent); border:1px solid rgba(91,140,255,0.3); }
+  .status.info{ background:rgba(62,207,142,0.1); color:var(--accent); border:1px solid rgba(62,207,142,0.3); }
   .status.error{ background:rgba(255,92,108,0.12); color:var(--err); border:1px solid rgba(255,92,108,0.3); }
   .status.ok{ background:rgba(62,207,142,0.12); color:var(--ok); border:1px solid rgba(62,207,142,0.3); }
-
-  .fields{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
+  .progress-bar{ width:100%; height:6px; border-radius:3px; background:var(--panel-2); overflow:hidden; margin-top:10px; display:none; }
+  .progress-bar.show{ display:block; }
+  .progress-fill{ height:100%; width:0%; background:var(--accent); transition:width 0.2s; }
+  .fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .field-full{ grid-column:1 / -1; }
   .fields label{ margin-bottom:4px; }
   .fields input{ margin-bottom:0; }
-
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:0.78rem;
-    margin-top:4px;
-  }
-  th, td{
-    text-align:left;
-    padding:7px 6px;
-    border-bottom:1px solid var(--border);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    max-width:90px;
-  }
+  details{ margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
+  summary{ cursor:pointer; font-size:0.82rem; color:var(--text-dim); }
+  #ocrRaw{ white-space:pre-wrap; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:0.72rem; color:var(--text-dim); background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; max-height:220px; overflow:auto; }
+  table{ width:100%; border-collapse:collapse; font-size:0.78rem; margin-top:4px; }
+  th, td{ text-align:left; padding:7px 6px; border-bottom:1px solid var(--border); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px; }
   th{ color:var(--text-dim); font-weight:600; }
-  .empty-state{
-    color:var(--text-dim);
-    font-size:0.83rem;
-    text-align:center;
-    padding:14px 0;
-  }
+  .empty-state{ color:var(--text-dim); font-size:0.83rem; text-align:center; padding:14px 0; }
   .row-actions{ display:flex; gap:8px; margin-top:10px; }
   .row-actions .btn{ margin-top:0; }
-  footer{
-    text-align:center;
-    color:var(--text-dim);
-    font-size:0.7rem;
-    margin-top:26px;
-    padding:0 20px;
-  }
-  .spinner{
-    display:inline-block;
-    width:14px; height:14px;
-    border:2px solid rgba(255,255,255,0.4);
-    border-top-color:#fff;
-    border-radius:50%;
-    animation:spin 0.7s linear infinite;
-    vertical-align:-2px;
-    margin-right:6px;
-  }
+  footer{ text-align:center; color:var(--text-dim); font-size:0.7rem; margin-top:26px; padding:0 20px; line-height:1.5; }
+  .spinner{ display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.4); border-top-color:#0c1410; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:-2px; margin-right:6px; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🧾 Extractor de Facturas</h1>
-  <p>Toma o sube una foto y extrae fecha, N° de factura, RUC, valor, impuesto y total</p>
+  <h1>🧾 Extractor de Facturas <span class="badge free">100% gratis</span></h1>
+  <p>Todo el reconocimiento de texto ocurre en tu propio navegador (OCR de código abierto), sin API key y sin costo. La precisión es menor que la versión con IA — revisa siempre los datos antes de guardar.</p>
 </header>
 
 <main>
 
   <div class="card">
-    <h2>1. Clave de API <span class="badge">no se guarda</span></h2>
-    <label for="apiKey">Tu Anthropic API key</label>
-    <input type="password" id="apiKey" placeholder="sk-ant-...">
-    <div class="hint">
-      Se usa solo en tu navegador para llamar a la API de Claude y no se almacena en ningún lado (ni cookies, ni disco):
-      deberás pegarla de nuevo cada vez que abras esta página. Consíguela en
-      <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
-    </div>
-    <label for="model">Modelo</label>
-    <select id="model">
-      <option value="claude-sonnet-5" selected>Claude Sonnet 5 (recomendado, más preciso)</option>
-      <option value="claude-haiku-4-5">Claude Haiku 4.5 (más rápido y económico)</option>
-    </select>
-  </div>
-
-  <div class="card">
-    <h2>2. Foto de la factura</h2>
+    <h2>1. Foto de la factura</h2>
     <div class="photo-input">
       <label class="photo-btn" for="cameraInput">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8a2 2 0 0 1 2-2h1.2l.9-1.5A2 2 0 0 1 9.8 3.6h4.4a2 2 0 0 1 1.7.9L16.8 6H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="13" r="3.4"/></svg>
@@ -266,42 +88,29 @@
     <div id="preview-wrap">
       <img id="preview" alt="Vista previa de la factura">
     </div>
-    <button class="btn btn-primary" id="extractBtn" disabled>Extraer datos</button>
+    <button class="btn btn-primary" id="extractBtn" disabled>Extraer datos (OCR local)</button>
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="status" id="status"></div>
   </div>
 
   <div class="card" id="resultCard" style="display:none;">
-    <h2>3. Datos extraídos <span class="badge">revisa antes de guardar</span></h2>
+    <h2>2. Datos detectados <span class="badge">revisa y corrige</span></h2>
     <div class="fields">
-      <div>
-        <label>Fecha</label>
-        <input type="text" id="f_fecha" placeholder="DD/MM/AAAA">
-      </div>
-      <div>
-        <label>N° de factura</label>
-        <input type="text" id="f_numero_factura">
-      </div>
-      <div class="field-full">
-        <label>RUC</label>
-        <input type="text" id="f_ruc">
-      </div>
-      <div>
-        <label>Valor (sin impuesto)</label>
-        <input type="text" id="f_valor">
-      </div>
-      <div>
-        <label>Impuesto</label>
-        <input type="text" id="f_impuesto">
-      </div>
-      <div class="field-full">
-        <label>Total</label>
-        <input type="text" id="f_total">
-      </div>
+      <div><label>Fecha</label><input type="text" id="f_fecha" placeholder="DD/MM/AAAA"></div>
+      <div><label>N° de factura</label><input type="text" id="f_numero_factura"></div>
+      <div class="field-full"><label>RUC</label><input type="text" id="f_ruc"></div>
+      <div><label>Valor (sin impuesto)</label><input type="text" id="f_valor"></div>
+      <div><label>Impuesto</label><input type="text" id="f_impuesto"></div>
+      <div class="field-full"><label>Total</label><input type="text" id="f_total"></div>
     </div>
     <div class="row-actions">
       <button class="btn btn-primary" id="saveBtn">Guardar en historial</button>
       <button class="btn btn-ghost" id="discardBtn">Descartar</button>
     </div>
+    <details>
+      <summary>Ver texto reconocido por el OCR (para verificar manualmente)</summary>
+      <div id="ocrRaw"></div>
+    </details>
   </div>
 
   <div class="card">
@@ -309,11 +118,7 @@
     <div id="historyEmpty" class="empty-state">Aún no has guardado ninguna factura.</div>
     <div id="historyTableWrap" style="display:none; overflow-x:auto;">
       <table>
-        <thead>
-          <tr>
-            <th>Fecha</th><th>N° Factura</th><th>RUC</th><th>Valor</th><th>Impuesto</th><th>Total</th><th></th>
-          </tr>
-        </thead>
+        <thead><tr><th>Fecha</th><th>N° Factura</th><th>RUC</th><th>Valor</th><th>Impuesto</th><th>Total</th><th></th></tr></thead>
         <tbody id="historyBody"></tbody>
       </table>
     </div>
@@ -321,13 +126,14 @@
   </div>
 
   <footer>
-    El historial vive solo en la memoria de esta pestaña: si recargas o cierras la página se pierde,
-    así que descarga el CSV antes de salir si quieres conservarlo. Las fotos y datos se envían directamente
-    de tu navegador a la API de Anthropic — no pasan por ningún servidor intermedio.
+    Motor de OCR: Tesseract.js (código abierto). La primera vez que extraigas datos se descargan
+    unos archivos de idioma (~15 MB) desde una CDN pública; después queda en caché del navegador.
+    El historial vive solo en la memoria de esta pestaña: descarga el CSV antes de cerrarla si quieres conservarlo.
   </footer>
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
 (function(){
   const cameraInput = document.getElementById('cameraInput');
@@ -337,8 +143,6 @@
   const extractBtn = document.getElementById('extractBtn');
   const statusEl = document.getElementById('status');
   const resultCard = document.getElementById('resultCard');
-  const apiKeyInput = document.getElementById('apiKey');
-  const modelSelect = document.getElementById('model');
   const saveBtn = document.getElementById('saveBtn');
   const discardBtn = document.getElementById('discardBtn');
   const historyBody = document.getElementById('historyBody');
@@ -346,9 +150,11 @@
   const historyTableWrap = document.getElementById('historyTableWrap');
   const downloadCsvBtn = document.getElementById('downloadCsvBtn');
   const countBadge = document.getElementById('countBadge');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const ocrRaw = document.getElementById('ocrRaw');
 
-  let currentImageBase64 = null;
-  let currentImageMediaType = null;
+  let currentFile = null;
   let history = []; // en memoria únicamente, se pierde al recargar
 
   const fieldIds = ['f_fecha','f_numero_factura','f_ruc','f_valor','f_impuesto','f_total'];
@@ -364,17 +170,12 @@
 
   function handleFile(file){
     if(!file) return;
+    currentFile = file;
     const reader = new FileReader();
     reader.onload = function(e){
-      const dataUrl = e.target.result;
-      preview.src = dataUrl;
+      preview.src = e.target.result;
       previewWrap.style.display = 'block';
-      const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.*)$/);
-      if(match){
-        currentImageMediaType = match[1];
-        currentImageBase64 = match[2];
-        extractBtn.disabled = false;
-      }
+      extractBtn.disabled = false;
       resultCard.style.display = 'none';
       clearStatus();
     };
@@ -384,102 +185,128 @@
   cameraInput.addEventListener('change', (e)=> handleFile(e.target.files[0]));
   fileInput.addEventListener('change', (e)=> handleFile(e.target.files[0]));
 
+  // ---- Heurísticas de extracción para facturas/boletas peruanas ----
+  function normalizeNumber(s){
+    if(!s) return '';
+    // quita espacios y separador de miles "," dejando el punto decimal
+    let v = s.replace(/\s/g,'').replace(/S\/?\.?/i,'');
+    // si tiene coma y punto, asumimos coma=miles, punto=decimal
+    if(/,\d{3}(\.|$)/.test(v) || (v.includes(',') && v.includes('.'))){
+      v = v.replace(/,/g,'');
+    } else {
+      v = v.replace(',', '.');
+    }
+    return v;
+  }
+
+  function findFirst(text, regex){
+    const m = text.match(regex);
+    return m ? m[1].trim() : '';
+  }
+
+  function findAllAmounts(text, labelRegex){
+    const re = new RegExp(labelRegex.source, 'gi');
+    const matches = [];
+    let m;
+    while((m = re.exec(text)) !== null){
+      matches.push(normalizeNumber(m[1]));
+    }
+    return matches;
+  }
+
+  function parseInvoice(text){
+    const t = text.replace(/\r/g,'');
+
+    // RUC: 11 dígitos, idealmente cerca de la etiqueta RUC
+    let ruc = findFirst(t, /R\.?\s*U\.?\s*C\.?\s*[:\-]?\s*(\d{11})/i);
+    if(!ruc){
+      const m = t.match(/\b\d{11}\b/);
+      ruc = m ? m[0] : '';
+    }
+
+    // Fecha: DD/MM/AAAA, DD-MM-AAAA, etc.
+    let fecha = findFirst(t, /FECHA[^0-9]{0,15}(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})/i);
+    if(!fecha){
+      const m = t.match(/\b(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})\b/);
+      fecha = m ? m[1] : '';
+    }
+
+    // N° de factura/boleta: formato serie-correlativo (F001-00001, B123-4567, E001-123)
+    let numero = findFirst(t, /\b([EFB]\s?\d{3}\s?-\s?\d{1,8})\b/i);
+    if(!numero){
+      numero = findFirst(t, /(?:FACTURA|BOLETA|COMPROBANTE)[^0-9]{0,10}(?:N[°oº]?\.?)?\s*[:\-]?\s*([A-Z0-9\-]{4,15})/i);
+    }
+
+    // Total: última coincidencia de "TOTAL" seguida de un monto (para evitar "subtotal")
+    const totalMatches = findAllAmounts(t, /(?:^|\s)TOTAL(?:\s+A\s+PAGAR)?[^0-9]{0,12}(\d[\d.,]*\d|\d)/i);
+    let total = totalMatches.length ? totalMatches[totalMatches.length - 1] : '';
+
+    // IGV / impuesto
+    let impuesto = findFirst(t, /I\.?\s*G\.?\s*V\.?[^0-9]{0,15}(\d[\d.,]*\d|\d)/i);
+    if(!impuesto) impuesto = findFirst(t, /IMPUESTO[^0-9]{0,15}(\d[\d.,]*\d|\d)/i);
+    if(impuesto) impuesto = normalizeNumber(impuesto);
+
+    // Valor / subtotal (op. gravada)
+    let valor = findFirst(t, /(?:SUB\s*TOTAL|VALOR\s*VENTA|OP\.?\s*GRAVAD[AO]S?)[^0-9]{0,15}(\d[\d.,]*\d|\d)/i);
+    if(valor) valor = normalizeNumber(valor);
+
+    // Si falta valor o impuesto pero sí tenemos total, estimamos con IGV 18% (Perú) como referencia
+    if(total && (!valor || !impuesto)){
+      const totalNum = parseFloat(total);
+      if(!isNaN(totalNum)){
+        if(!valor) valor = (totalNum / 1.18).toFixed(2) + ' (estimado)';
+        if(!impuesto) impuesto = (totalNum - totalNum / 1.18).toFixed(2) + ' (estimado)';
+      }
+    }
+
+    return { fecha, numero_factura: numero, ruc, valor, impuesto, total };
+  }
+
   extractBtn.addEventListener('click', async ()=>{
-    const apiKey = apiKeyInput.value.trim();
-    if(!apiKey){
-      showStatus('Pega tu Anthropic API key arriba antes de continuar.', 'error');
+    if(!currentFile){
+      showStatus('Primero toma o sube una foto de la factura.', 'error');
       return;
     }
-    if(!currentImageBase64){
-      showStatus('Primero toma o sube una foto de la factura.', 'error');
+    if(typeof Tesseract === 'undefined'){
+      showStatus('No se pudo cargar el motor de OCR (Tesseract.js). Revisa tu conexión a internet e intenta de nuevo.', 'error');
       return;
     }
 
     extractBtn.disabled = true;
-    showStatus('<span class="spinner"></span>Analizando la factura con IA…', 'info');
-    statusEl.innerHTML = '<span class="spinner"></span>Analizando la factura con IA…';
-    statusEl.className = 'status show info';
-
-    const prompt = `Analiza la imagen de esta factura o boleta y extrae exactamente estos 6 datos:
-- fecha: la fecha de emisión, en formato DD/MM/AAAA
-- numero_factura: el número de factura, boleta o comprobante
-- ruc: el número de RUC del emisor
-- valor: el valor o subtotal antes de impuestos (solo el número, sin símbolo de moneda)
-- impuesto: el monto del impuesto (IGV/IVA), (solo el número, sin símbolo de moneda)
-- total: el monto total a pagar (solo el número, sin símbolo de moneda)
-
-Si algún dato no aparece en la imagen o no se puede leer con certeza, usa null para ese campo.
-Responde ÚNICAMENTE con un objeto JSON válido con exactamente esas 6 claves, sin texto adicional, sin explicaciones y sin bloques de código markdown.`;
+    progressBar.classList.add('show');
+    progressFill.style.width = '0%';
+    showStatus('Preparando el reconocimiento de texto…', 'info');
 
     try{
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: modelSelect.value,
-          max_tokens: 500,
-          messages: [{
-            role: 'user',
-            content: [
-              { type: 'image', source: { type: 'base64', media_type: currentImageMediaType, data: currentImageBase64 } },
-              { type: 'text', text: prompt }
-            ]
-          }]
-        })
+      const result = await Tesseract.recognize(currentFile, 'spa', {
+        logger: (m) => {
+          if(m.status === 'recognizing text' && typeof m.progress === 'number'){
+            progressFill.style.width = Math.round(m.progress * 100) + '%';
+            showStatus('Reconociendo texto… ' + Math.round(m.progress * 100) + '%', 'info');
+          } else if(m.status){
+            showStatus(m.status + '…', 'info');
+          }
+        }
       });
 
-      if(!resp.ok){
-        let detail = '';
-        try{ const errJson = await resp.json(); detail = errJson.error && errJson.error.message ? errJson.error.message : JSON.stringify(errJson); }
-        catch(e){ detail = resp.statusText; }
-        if(resp.status === 401){
-          showStatus('La API key no es válida. Revísala e intenta de nuevo.', 'error');
-        } else if(resp.status === 429){
-          showStatus('Se alcanzó el límite de uso de la API. Espera un momento e intenta de nuevo.', 'error');
-        } else {
-          showStatus('Error de la API (' + resp.status + '): ' + detail, 'error');
-        }
-        extractBtn.disabled = false;
-        return;
-      }
+      const text = result.data.text || '';
+      ocrRaw.textContent = text.trim() || '(no se detectó texto)';
 
-      const data = await resp.json();
-      const textBlock = (data.content || []).find(b => b.type === 'text');
-      if(!textBlock){
-        showStatus('La respuesta de la IA no contenía texto. Intenta con otra foto.', 'error');
-        extractBtn.disabled = false;
-        return;
-      }
-
-      let raw = textBlock.text.trim();
-      raw = raw.replace(/^```(json)?/i, '').replace(/```$/, '').trim();
-
-      let parsed;
-      try{
-        parsed = JSON.parse(raw);
-      }catch(e){
-        showStatus('No se pudo interpretar la respuesta de la IA. Intenta con una foto más nítida.', 'error');
-        extractBtn.disabled = false;
-        return;
-      }
-
-      document.getElementById('f_fecha').value = parsed.fecha ?? '';
-      document.getElementById('f_numero_factura').value = parsed.numero_factura ?? '';
-      document.getElementById('f_ruc').value = parsed.ruc ?? '';
-      document.getElementById('f_valor').value = parsed.valor ?? '';
-      document.getElementById('f_impuesto').value = parsed.impuesto ?? '';
-      document.getElementById('f_total').value = parsed.total ?? '';
+      const parsed = parseInvoice(text);
+      document.getElementById('f_fecha').value = parsed.fecha;
+      document.getElementById('f_numero_factura').value = parsed.numero_factura;
+      document.getElementById('f_ruc').value = parsed.ruc;
+      document.getElementById('f_valor').value = parsed.valor;
+      document.getElementById('f_impuesto').value = parsed.impuesto;
+      document.getElementById('f_total').value = parsed.total;
 
       resultCard.style.display = 'block';
-      clearStatus();
+      progressBar.classList.remove('show');
+      showStatus('Listo. Revisa y corrige los campos antes de guardar — el OCR gratuito puede cometer errores.', 'ok');
       resultCard.scrollIntoView({behavior:'smooth', block:'start'});
     }catch(err){
-      showStatus('No se pudo conectar con la API de Anthropic. Revisa tu conexión a internet. (' + err.message + ')', 'error');
+      progressBar.classList.remove('show');
+      showStatus('Error al procesar la imagen: ' + err.message, 'error');
     }finally{
       extractBtn.disabled = false;
     }
@@ -493,7 +320,7 @@ Responde ÚNICAMENTE con un objeto JSON válido con exactamente esas 6 claves, s
     resultCard.style.display = 'none';
     previewWrap.style.display = 'none';
     preview.src = '';
-    currentImageBase64 = null;
+    currentFile = null;
     extractBtn.disabled = true;
     cameraInput.value = '';
     fileInput.value = '';
@@ -568,4 +395,3 @@ Responde ÚNICAMENTE con un objeto JSON válido con exactamente esas 6 claves, s
 
 </body>
 </html>
-
