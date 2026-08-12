@@ -214,6 +214,19 @@
     return matches;
   }
 
+  // Busca un monto que aparece después de una etiqueta, ANCLADO al símbolo "S/"
+  // (todas las facturas peruanas muestran los montos precedidos de S/), ya que
+  // el texto entre la etiqueta y el monto puede variar (espacios, columnas, "18%", etc.)
+  function findAmountsAfterLabel(text, labelRegex){
+    const re = new RegExp('(?:' + labelRegex.source + ')[\\s\\S]{0,35}?S\\/\\.?\\s*(\\d[\\d.,]*\\d|\\d)', 'gi');
+    const matches = [];
+    let m;
+    while((m = re.exec(text)) !== null){
+      matches.push(normalizeNumber(m[1]));
+    }
+    return matches;
+  }
+
   function parseInvoice(text){
     const t = text.replace(/\r/g,'');
 
@@ -237,18 +250,21 @@
       numero = findFirst(t, /(?:FACTURA|BOLETA|COMPROBANTE)[^0-9]{0,10}(?:N[°oº]?\.?)?\s*[:\-]?\s*([A-Z0-9\-]{4,15})/i);
     }
 
-    // Total: última coincidencia de "TOTAL" seguida de un monto (para evitar "subtotal")
-    const totalMatches = findAllAmounts(t, /(?:^|\s)TOTAL(?:\s+A\s+PAGAR)?[^0-9]{0,12}(\d[\d.,]*\d|\d)/i);
+    // Total: prioriza "IMPORTE TOTAL"; si no aparece, usa la última línea con "TOTAL"
+    // (excluyendo "TOTAL VENTAS GRAVADAS", que corresponde al campo "valor")
+    let totalMatches = findAmountsAfterLabel(t, /IMPORTE\s*TOTAL/i);
+    if(!totalMatches.length){
+      totalMatches = findAmountsAfterLabel(t, /\bTOTAL\b(?!\s*VENTAS)/i);
+    }
     let total = totalMatches.length ? totalMatches[totalMatches.length - 1] : '';
 
-    // IGV / impuesto
-    let impuesto = findFirst(t, /I\.?\s*G\.?\s*V\.?[^0-9]{0,15}(\d[\d.,]*\d|\d)/i);
-    if(!impuesto) impuesto = findFirst(t, /IMPUESTO[^0-9]{0,15}(\d[\d.,]*\d|\d)/i);
-    if(impuesto) impuesto = normalizeNumber(impuesto);
+    // IGV / impuesto: línea que diga "IGV" y/o "18%" seguida del monto en S/
+    const impuestoMatches = findAmountsAfterLabel(t, /I\.?\s*G\.?\s*V\.?|18\s*%/i);
+    let impuesto = impuestoMatches.length ? impuestoMatches[0] : '';
 
-    // Valor / subtotal (op. gravada)
-    let valor = findFirst(t, /(?:SUB\s*TOTAL|VALOR\s*VENTA|OP\.?\s*GRAVAD[AO]S?)[^0-9]{0,15}(\d[\d.,]*\d|\d)/i);
-    if(valor) valor = normalizeNumber(valor);
+    // Valor: línea "TOTAL VENTAS GRAVADAS" u "OP.GRAVADAS" seguida del monto en S/
+    const valorMatches = findAmountsAfterLabel(t, /TOTAL\s*VENTAS?\s*GRAVADAS?|OP\.?\s*GRAVADAS?/i);
+    let valor = valorMatches.length ? valorMatches[0] : '';
 
     // Si falta valor o impuesto pero sí tenemos total, estimamos con IGV 18% (Perú) como referencia
     if(total && (!valor || !impuesto)){
