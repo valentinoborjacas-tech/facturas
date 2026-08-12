@@ -1,1 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Extractor de Facturas</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --panel:#171a21;
+    --panel-2:#1e222c;
+    --border:#2a2f3a;
+    --text:#e8eaed;
+    --text-dim:#9aa1ae;
+    --accent:#5b8cff;
+    --accent-2:#7c5bff;
+    --ok:#3ecf8e;
+    --err:#ff5c6c;
+    --warn:#f5a623;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f5f6f8;
+      --panel:#ffffff;
+      --panel-2:#f0f1f4;
+      --border:#e2e4ea;
+      --text:#1b1e26;
+      --text-dim:#666b78;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  header{
+    padding:20px 18px 10px;
+    text-align:center;
+  }
+  header h1{
+    font-size:1.3rem;
+    margin:0 0 4px;
+    font-weight:700;
+  }
+  header p{
+    margin:0;
+    color:var(--text-dim);
+    font-size:0.88rem;
+  }
+  main{
+    max-width:560px;
+    margin:0 auto;
+    padding:0 16px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-top:14px;
+  }
+  .card h2{
+    font-size:0.95rem;
+    margin:0 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .badge{
+    font-size:0.68rem;
+    background:var(--panel-2);
+    color:var(--text-dim);
+    padding:2px 8px;
+    border-radius:20px;
+    border:1px solid var(--border);
+  }
+  label{
+    display:block;
+    font-size:0.8rem;
+    color:var(--text-dim);
+    margin-bottom:6px;
+  }
+  input[type=password], input[type=text], select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text);
+    font-size:0.95rem;
+    margin-bottom:10px;
+  }
+  select{ appearance:none; }
+  .hint{
+    font-size:0.75rem;
+    color:var(--text-dim);
+    line-height:1.4;
+    margin-top:-4px;
+    margin-bottom:10px;
+  }
+  .hint a{ color:var(--accent); }
+  .photo-input{
+    display:flex;
+    gap:10px;
+  }
+  .photo-btn{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:22px 10px;
+    border-radius:12px;
+    border:1.5px dashed var(--border);
+    background:var(--panel-2);
+    color:var(--text-dim);
+    font-size:0.82rem;
+    cursor:pointer;
+    text-align:center;
+  }
+  .photo-btn svg{ width:26px; height:26px; opacity:0.8; }
+  input[type=file]{ display:none; }
+  #preview-wrap{
+    margin-top:12px;
+    display:none;
+  }
+  #preview-wrap img{
+    width:100%;
+    border-radius:12px;
+    border:1px solid var(--border);
+    display:block;
+  }
+  .btn{
+    width:100%;
+    padding:13px;
+    border-radius:12px;
+    border:none;
+    font-size:0.98rem;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:12px;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff;
+  }
+  .btn-primary:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text);
+  }
+  .status{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:0.85rem;
+    display:none;
+  }
+  .status.show{ display:block; }
+  .status.info{ background:rgba(91,140,255,0.12); color:var(--accent); border:1px solid rgba(91,140,255,0.3); }
+  .status.error{ background:rgba(255,92,108,0.12); color:var(--err); border:1px solid rgba(255,92,108,0.3); }
+  .status.ok{ background:rgba(62,207,142,0.12); color:var(--ok); border:1px solid rgba(62,207,142,0.3); }
+
+  .fields{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .field-full{ grid-column:1 / -1; }
+  .fields label{ margin-bottom:4px; }
+  .fields input{ margin-bottom:0; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.78rem;
+    margin-top:4px;
+  }
+  th, td{
+    text-align:left;
+    padding:7px 6px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:90px;
+  }
+  th{ color:var(--text-dim); font-weight:600; }
+  .empty-state{
+    color:var(--text-dim);
+    font-size:0.83rem;
+    text-align:center;
+    padding:14px 0;
+  }
+  .row-actions{ display:flex; gap:8px; margin-top:10px; }
+  .row-actions .btn{ margin-top:0; }
+  footer{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:0.7rem;
+    margin-top:26px;
+    padding:0 20px;
+  }
+  .spinner{
+    display:inline-block;
+    width:14px; height:14px;
+    border:2px solid rgba(255,255,255,0.4);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin 0.7s linear infinite;
+    vertical-align:-2px;
+    margin-right:6px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧾 Extractor de Facturas</h1>
+  <p>Toma o sube una foto y extrae fecha, N° de factura, RUC, valor, impuesto y total</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>1. Clave de API <span class="badge">no se guarda</span></h2>
+    <label for="apiKey">Tu Anthropic API key</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-...">
+    <div class="hint">
+      Se usa solo en tu navegador para llamar a la API de Claude y no se almacena en ningún lado (ni cookies, ni disco):
+      deberás pegarla de nuevo cada vez que abras esta página. Consíguela en
+      <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
+    </div>
+    <label for="model">Modelo</label>
+    <select id="model">
+      <option value="claude-sonnet-5" selected>Claude Sonnet 5 (recomendado, más preciso)</option>
+      <option value="claude-haiku-4-5">Claude Haiku 4.5 (más rápido y económico)</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <h2>2. Foto de la factura</h2>
+    <div class="photo-input">
+      <label class="photo-btn" for="cameraInput">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8a2 2 0 0 1 2-2h1.2l.9-1.5A2 2 0 0 1 9.8 3.6h4.4a2 2 0 0 1 1.7.9L16.8 6H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="13" r="3.4"/></svg>
+        Tomar foto
+        <input type="file" id="cameraInput" accept="image/*" capture="environment">
+      </label>
+      <label class="photo-btn" for="fileInput">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 16.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5M7 9l5-5 5 5M12 4v13"/></svg>
+        Subir imagen
+        <input type="file" id="fileInput" accept="image/*">
+      </label>
+    </div>
+    <div id="preview-wrap">
+      <img id="preview" alt="Vista previa de la factura">
+    </div>
+    <button class="btn btn-primary" id="extractBtn" disabled>Extraer datos</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none;">
+    <h2>3. Datos extraídos <span class="badge">revisa antes de guardar</span></h2>
+    <div class="fields">
+      <div>
+        <label>Fecha</label>
+        <input type="text" id="f_fecha" placeholder="DD/MM/AAAA">
+      </div>
+      <div>
+        <label>N° de factura</label>
+        <input type="text" id="f_numero_factura">
+      </div>
+      <div class="field-full">
+        <label>RUC</label>
+        <input type="text" id="f_ruc">
+      </div>
+      <div>
+        <label>Valor (sin impuesto)</label>
+        <input type="text" id="f_valor">
+      </div>
+      <div>
+        <label>Impuesto</label>
+        <input type="text" id="f_impuesto">
+      </div>
+      <div class="field-full">
+        <label>Total</label>
+        <input type="text" id="f_total">
+      </div>
+    </div>
+    <div class="row-actions">
+      <button class="btn btn-primary" id="saveBtn">Guardar en historial</button>
+      <button class="btn btn-ghost" id="discardBtn">Descartar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Historial de esta sesión <span class="badge" id="countBadge">0</span></h2>
+    <div id="historyEmpty" class="empty-state">Aún no has guardado ninguna factura.</div>
+    <div id="historyTableWrap" style="display:none; overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th><th>N° Factura</th><th>RUC</th><th>Valor</th><th>Impuesto</th><th>Total</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+    <button class="btn btn-ghost" id="downloadCsvBtn" style="display:none;">⬇ Descargar historial (CSV)</button>
+  </div>
+
+  <footer>
+    El historial vive solo en la memoria de esta pestaña: si recargas o cierras la página se pierde,
+    así que descarga el CSV antes de salir si quieres conservarlo. Las fotos y datos se envían directamente
+    de tu navegador a la API de Anthropic — no pasan por ningún servidor intermedio.
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  const cameraInput = document.getElementById('cameraInput');
+  const fileInput = document.getElementById('fileInput');
+  const previewWrap = document.getElementById('preview-wrap');
+  const preview = document.getElementById('preview');
+  const extractBtn = document.getElementById('extractBtn');
+  const statusEl = document.getElementById('status');
+  const resultCard = document.getElementById('resultCard');
+  const apiKeyInput = document.getElementById('apiKey');
+  const modelSelect = document.getElementById('model');
+  const saveBtn = document.getElementById('saveBtn');
+  const discardBtn = document.getElementById('discardBtn');
+  const historyBody = document.getElementById('historyBody');
+  const historyEmpty = document.getElementById('historyEmpty');
+  const historyTableWrap = document.getElementById('historyTableWrap');
+  const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+  const countBadge = document.getElementById('countBadge');
+
+  let currentImageBase64 = null;
+  let currentImageMediaType = null;
+  let history = []; // en memoria únicamente, se pierde al recargar
+
+  const fieldIds = ['f_fecha','f_numero_factura','f_ruc','f_valor','f_impuesto','f_total'];
+
+  function showStatus(msg, type){
+    statusEl.textContent = msg;
+    statusEl.className = 'status show ' + type;
+  }
+  function clearStatus(){
+    statusEl.className = 'status';
+    statusEl.textContent = '';
+  }
+
+  function handleFile(file){
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const dataUrl = e.target.result;
+      preview.src = dataUrl;
+      previewWrap.style.display = 'block';
+      const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.*)$/);
+      if(match){
+        currentImageMediaType = match[1];
+        currentImageBase64 = match[2];
+        extractBtn.disabled = false;
+      }
+      resultCard.style.display = 'none';
+      clearStatus();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  cameraInput.addEventListener('change', (e)=> handleFile(e.target.files[0]));
+  fileInput.addEventListener('change', (e)=> handleFile(e.target.files[0]));
+
+  extractBtn.addEventListener('click', async ()=>{
+    const apiKey = apiKeyInput.value.trim();
+    if(!apiKey){
+      showStatus('Pega tu Anthropic API key arriba antes de continuar.', 'error');
+      return;
+    }
+    if(!currentImageBase64){
+      showStatus('Primero toma o sube una foto de la factura.', 'error');
+      return;
+    }
+
+    extractBtn.disabled = true;
+    showStatus('<span class="spinner"></span>Analizando la factura con IA…', 'info');
+    statusEl.innerHTML = '<span class="spinner"></span>Analizando la factura con IA…';
+    statusEl.className = 'status show info';
+
+    const prompt = `Analiza la imagen de esta factura o boleta y extrae exactamente estos 6 datos:
+- fecha: la fecha de emisión, en formato DD/MM/AAAA
+- numero_factura: el número de factura, boleta o comprobante
+- ruc: el número de RUC del emisor
+- valor: el valor o subtotal antes de impuestos (solo el número, sin símbolo de moneda)
+- impuesto: el monto del impuesto (IGV/IVA), (solo el número, sin símbolo de moneda)
+- total: el monto total a pagar (solo el número, sin símbolo de moneda)
+
+Si algún dato no aparece en la imagen o no se puede leer con certeza, usa null para ese campo.
+Responde ÚNICAMENTE con un objeto JSON válido con exactamente esas 6 claves, sin texto adicional, sin explicaciones y sin bloques de código markdown.`;
+
+    try{
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: modelSelect.value,
+          max_tokens: 500,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: currentImageMediaType, data: currentImageBase64 } },
+              { type: 'text', text: prompt }
+            ]
+          }]
+        })
+      });
+
+      if(!resp.ok){
+        let detail = '';
+        try{ const errJson = await resp.json(); detail = errJson.error && errJson.error.message ? errJson.error.message : JSON.stringify(errJson); }
+        catch(e){ detail = resp.statusText; }
+        if(resp.status === 401){
+          showStatus('La API key no es válida. Revísala e intenta de nuevo.', 'error');
+        } else if(resp.status === 429){
+          showStatus('Se alcanzó el límite de uso de la API. Espera un momento e intenta de nuevo.', 'error');
+        } else {
+          showStatus('Error de la API (' + resp.status + '): ' + detail, 'error');
+        }
+        extractBtn.disabled = false;
+        return;
+      }
+
+      const data = await resp.json();
+      const textBlock = (data.content || []).find(b => b.type === 'text');
+      if(!textBlock){
+        showStatus('La respuesta de la IA no contenía texto. Intenta con otra foto.', 'error');
+        extractBtn.disabled = false;
+        return;
+      }
+
+      let raw = textBlock.text.trim();
+      raw = raw.replace(/^```(json)?/i, '').replace(/```$/, '').trim();
+
+      let parsed;
+      try{
+        parsed = JSON.parse(raw);
+      }catch(e){
+        showStatus('No se pudo interpretar la respuesta de la IA. Intenta con una foto más nítida.', 'error');
+        extractBtn.disabled = false;
+        return;
+      }
+
+      document.getElementById('f_fecha').value = parsed.fecha ?? '';
+      document.getElementById('f_numero_factura').value = parsed.numero_factura ?? '';
+      document.getElementById('f_ruc').value = parsed.ruc ?? '';
+      document.getElementById('f_valor').value = parsed.valor ?? '';
+      document.getElementById('f_impuesto').value = parsed.impuesto ?? '';
+      document.getElementById('f_total').value = parsed.total ?? '';
+
+      resultCard.style.display = 'block';
+      clearStatus();
+      resultCard.scrollIntoView({behavior:'smooth', block:'start'});
+    }catch(err){
+      showStatus('No se pudo conectar con la API de Anthropic. Revisa tu conexión a internet. (' + err.message + ')', 'error');
+    }finally{
+      extractBtn.disabled = false;
+    }
+  });
+
+  saveBtn.addEventListener('click', ()=>{
+    const entry = {};
+    fieldIds.forEach(id => { entry[id] = document.getElementById(id).value.trim(); });
+    history.push(entry);
+    renderHistory();
+    resultCard.style.display = 'none';
+    previewWrap.style.display = 'none';
+    preview.src = '';
+    currentImageBase64 = null;
+    extractBtn.disabled = true;
+    cameraInput.value = '';
+    fileInput.value = '';
+    showStatus('Factura guardada en el historial de esta sesión.', 'ok');
+  });
+
+  discardBtn.addEventListener('click', ()=>{
+    resultCard.style.display = 'none';
+  });
+
+  function escapeHtml(s){
+    return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderHistory(){
+    countBadge.textContent = history.length;
+    if(history.length === 0){
+      historyEmpty.style.display = 'block';
+      historyTableWrap.style.display = 'none';
+      downloadCsvBtn.style.display = 'none';
+      return;
+    }
+    historyEmpty.style.display = 'none';
+    historyTableWrap.style.display = 'block';
+    downloadCsvBtn.style.display = 'block';
+    historyBody.innerHTML = history.map((h, i) => `
+      <tr>
+        <td>${escapeHtml(h.f_fecha)}</td>
+        <td>${escapeHtml(h.f_numero_factura)}</td>
+        <td>${escapeHtml(h.f_ruc)}</td>
+        <td>${escapeHtml(h.f_valor)}</td>
+        <td>${escapeHtml(h.f_impuesto)}</td>
+        <td>${escapeHtml(h.f_total)}</td>
+        <td><a href="#" data-idx="${i}" class="del-row" style="color:var(--err);text-decoration:none;">✕</a></td>
+      </tr>
+    `).join('');
+    historyBody.querySelectorAll('.del-row').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const idx = parseInt(a.getAttribute('data-idx'), 10);
+        history.splice(idx, 1);
+        renderHistory();
+      });
+    });
+  }
+
+  function csvEscape(v){
+    if(v == null) v = '';
+    v = String(v);
+    if(/[",\n;]/.test(v)) return '"' + v.replace(/"/g,'""') + '"';
+    return v;
+  }
+
+  downloadCsvBtn.addEventListener('click', ()=>{
+    const headers = ['Fecha','N° Factura','RUC','Valor','Impuesto','Total'];
+    const rows = history.map(h => [h.f_fecha,h.f_numero_factura,h.f_ruc,h.f_valor,h.f_impuesto,h.f_total].map(csvEscape).join(','));
+    const csv = '﻿' + headers.join(',') + '\n' + rows.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'facturas_' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  renderHistory();
+})();
+</script>
+
+</body>
+</html>
 
