@@ -10,6 +10,6 @@
    NUNCA pongas aquí la clave "service_role" ni la "secret".
    ========================================================= */
 window.BODEGA_CONFIG = {
-  supabaseUrl: 'https://TU-PROYECTO.supabase.co',
-  supabaseAnonKey: 'TU-CLAVE-ANON-O-PUBLISHABLE'
+  supabaseUrl: 'https://ffpcpxhvbadjdpugveie.supabase.co/rest/v1/',
+  supabaseAnonKey: 'sb_publishable_l4_os06O3TkCG6FT6QfBbw_f5hDWqvU'
 };
